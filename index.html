@@ -4,110 +4,235 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ANIOS Keuzehulp – Welk specialisme past bij mij?</title>
+  <meta name="description" content="Een laagdrempelige, interactieve keuzehulp voor ANIOS om te verkennen welk type medisch specialisme past: A (acuut), B (beschouwend), C (context), D (techniek)." />
   <style>
     :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
     body { margin: 0; background: #f6f7f9; color: #111; }
     header { padding: 24px 16px; background: #fff; border-bottom: 1px solid #e7e7e7; }
-    main { max-width: 920px; margin: 0 auto; padding: 16px; }
-    .card { background: #fff; border: 1px solid #e7e7e7; border-radius: 14px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04); margin: 12px 0; }
-    h1 { margin: 0 0 8px; font-size: 20px; }
-    p { margin: 8px 0; line-height: 1.5; }
+    main { max-width: 980px; margin: 0 auto; padding: 16px; }
+    .card { background: #fff; border: 1px solid #e7e7e7; border-radius: 16px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04); margin: 12px 0; }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    h2 { margin: 0 0 10px; font-size: 18px; }
+    h3 { margin: 0 0 10px; font-size: 16px; }
+    p { margin: 8px 0; line-height: 1.55; }
     .muted { color: #555; font-size: 14px; }
+    .small { font-size: 13px; color: #444; }
     .row { display: flex; gap: 12px; flex-wrap: wrap; }
     .col { flex: 1 1 360px; }
-    .q { margin: 14px 0; padding: 12px; border-radius: 12px; background: #fafafa; border: 1px solid #eee; }
-    .q h3 { margin: 0 0 10px; font-size: 16px; }
-    .opt { display: grid; gap: 8px; }
-    label { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border: 1px solid #e7e7e7; border-radius: 12px; background: #fff; cursor: pointer; }
-    input[type="radio"] { margin-top: 2px; }
-    label:hover { border-color: #cfd6df; }
+    .pill { display: inline-flex; padding: 4px 10px; border-radius: 999px; border: 1px solid #e7e7e7; background: #fff; font-size: 12px; }
     .barwrap { width: 100%; height: 10px; background: #eceff3; border-radius: 999px; overflow: hidden; }
     .bar { height: 100%; width: 0%; background: #111; transition: width .25s ease; }
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-    button { border: 1px solid #111; background: #111; color: #fff; padding: 10px 12px; border-radius: 12px; cursor: pointer; }
-    button.secondary { background: #fff; color: #111; }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    .pill { display: inline-flex; padding: 4px 10px; border-radius: 999px; border: 1px solid #e7e7e7; background: #fff; font-size: 12px; }
-    .resultGrid { display: grid; gap: 10px; }
-    .resultBox { border: 1px solid #e7e7e7; border-radius: 14px; padding: 12px; background: #fff; }
-    .resultBox h4 { margin: 0 0 6px; }
-    ul { margin: 8px 0 0 18px; }
-    .small { font-size: 13px; color: #444; }
+    .divider { height: 1px; background: #eee; margin: 12px 0; }
+
+    /* Question */
+    .q { margin: 14px 0; padding: 12px; border-radius: 14px; background: #fafafa; border: 1px solid #eee; }
+    .qhead { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .qmeta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .tag { font-size: 12px; padding: 3px 8px; border-radius: 999px; border: 1px solid #e7e7e7; background: #fff; color:#333; }
+    .hint { font-size: 12px; color:#555; background:#fff; border:1px solid #eee; border-radius:12px; padding:8px 10px; }
+    .opt { display: grid; gap: 8px; margin-top: 10px; }
+    label.optlabel { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border: 1px solid #e7e7e7; border-radius: 14px; background: #fff; cursor: pointer; }
+    input[type="radio"] { margin-top: 2px; }
+    label.optlabel:hover { border-color: #cfd6df; }
+    .selected { border-color: #111 !important; }
+    .optlabel strong { font-weight: 700; }
+
+    /* Guidance blocks */
+    .callout { border: 1px solid #e7e7e7; background:#fff; border-radius: 16px; padding: 12px; }
     .warn { background: #fff7e6; border: 1px solid #ffe1a6; }
+    .good { background: #f0fff4; border: 1px solid #b7f3c6; }
+    .info { background: #f3f6ff; border: 1px solid #cfd8ff; }
+
+    /* Actions */
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; align-items:center; }
+    button { border: 1px solid #111; background: #111; color: #fff; padding: 10px 12px; border-radius: 14px; cursor: pointer; }
+    button.secondary { background: #fff; color: #111; }
+    button.ghost { background: transparent; color: #111; border: 1px dashed #bbb; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; background:#fff; border:1px solid #e7e7e7; border-radius:8px; padding:2px 6px; }
+
+    /* Results */
+    .resultGrid { display: grid; gap: 10px; }
+    .resultBox { border: 1px solid #e7e7e7; border-radius: 16px; padding: 12px; background: #fff; }
+    .resultBox h4 { margin: 0 0 6px; font-size: 16px; }
+    ul { margin: 8px 0 0 18px; }
+    .scoreRow { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .scoreCard { flex: 1 1 160px; border:1px solid #e7e7e7; border-radius:16px; padding:10px; background:#fff; }
+    .scoreBarWrap { height: 10px; border-radius: 999px; background:#eceff3; overflow:hidden; margin-top:8px; }
+    .scoreBar { height:100%; width:0%; background:#111; transition: width .25s ease; }
+    .twoCol { display:grid; gap:10px; grid-template-columns: 1fr; }
+    @media (min-width: 860px){ .twoCol { grid-template-columns: 1fr 1fr; } }
+
+    /* Modal */
+    dialog { border:none; border-radius:16px; padding:0; max-width: 720px; width: calc(100% - 32px); box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+    dialog::backdrop { background: rgba(0,0,0,.35); }
+    .modalHead { padding:14px 16px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .modalBody { padding: 14px 16px; }
+    .modalActions { padding: 14px 16px; border-top:1px solid #eee; display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .xbtn { border:1px solid #e7e7e7; background:#fff; border-radius:12px; padding:8px 10px; cursor:pointer; }
+
     footer { padding: 20px 16px; color: #666; font-size: 13px; text-align: center; }
-    @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+    @media (prefers-reduced-motion: reduce) { .bar, .scoreBar { transition: none; } }
   </style>
 </head>
 
 <body>
 <header>
-  <div style="max-width:920px;margin:0 auto;">
-    <h1>ANIOS Keuzehulp – Welk type specialisme past bij mij?</h1>
+  <div style="max-width:980px;margin:0 auto;">
+    <h1>ANIOS Keuzehulp – Welke richting past bij jou?</h1>
     <p class="muted">
-      Invultijd: 5–10 minuten. Je antwoorden blijven in je browser (geen opslag).
-      Deze test is bedoeld als oriëntatie, niet als selectie-instrument.
+      Een korte, praktische keuzehulp die je helpt je voorkeuren te vertalen naar een <strong>richting</strong> (A–D).
+      Daarna krijg je concrete vervolgstappen (meelopen, gesprekken, reflectie).
+      <br><span class="pill">Invultijd: 7–10 min</span> <span class="pill">Geen opslag</span> <span class="pill">Mobielvriendelijk</span>
     </p>
+
     <div class="barwrap" aria-label="Voortgang">
       <div class="bar" id="progressBar"></div>
     </div>
-    <p class="muted"><span class="pill" id="progressText">0% ingevuld</span></p>
+    <p class="muted" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <span class="pill" id="progressText">0% ingevuld</span>
+      <span class="pill" id="answeredText">0/0 vragen beantwoord</span>
+      <span class="pill" id="timeHint">Tip: antwoord vanuit energie</span>
+    </p>
   </div>
 </header>
 
 <main>
+  <!-- Intro / Guidance -->
   <div class="card">
     <div class="row">
       <div class="col">
-        <p><strong>Hoe werkt de score?</strong><br>
-          Elke vraag geeft punten aan één “richting”:</p>
+        <h2>Hoe gebruik je deze keuzehulp?</h2>
+        <p class="small">
+          Deze test is het meest waardevol als je antwoordt vanuit <strong>energie</strong>:
+          wat zou je het liefst doen op een drukke dag, als je niet “braaf” hoeft te zijn?
+        </p>
+        <div class="callout info">
+          <p class="small" style="margin:0;">
+            <strong>Wat je krijgt:</strong> een top-match + runner-up, een korte interpretatie en 4-weekse vervolgstappen.
+            <br><strong>Wat het níet is:</strong> een selectie-instrument of definitieve diagnose.
+          </p>
+        </div>
+        <div class="divider"></div>
+        <p class="small"><strong>De 4 richtingen:</strong></p>
         <ul class="small">
-          <li><strong>A</strong> = Acute & doeners (tempo, beslissen, directe actie)</li>
-          <li><strong>B</strong> = Beschouwend & analytisch (diagnostisch puzzelen)</li>
-          <li><strong>C</strong> = Relatie & context (langdurig contact, gesprekken)</li>
-          <li><strong>D</strong> = Techniek & precisie (procedures/beelden, vaak indirect)</li>
+          <li><strong>A</strong> — Acuut & doeners: tempo, directe actie, beslissen onder druk</li>
+          <li><strong>B</strong> — Beschouwend & analytisch: diagnostiek, complexiteit, redeneren</li>
+          <li><strong>C</strong> — Relatie & context: gesprekken, begeleiding, mens & systeem</li>
+          <li><strong>D</strong> — Techniek & precisie: beelden/procedures, nauwkeurigheid, vaak indirect</li>
         </ul>
       </div>
+
       <div class="col">
-        <p class="small warn card" style="margin:0;">
-          <strong>Tip:</strong> antwoord op basis van waar je energie van krijgt (niet wat “hoort”).
-          Als je twijfelt tussen twee opties: kies wat je op een drukke dag het liefst doet.
-        </p>
+        <div class="callout warn">
+          <h3 style="margin:0 0 8px;">Mini-check vóór je start</h3>
+          <ul class="small" style="margin-top:0;">
+            <li>Kies het antwoord dat je <strong>vanzelf</strong> pakt, niet wat je “zou moeten”.</li>
+            <li>Twijfel tussen twee? Kies wat je het minst <strong>leeg trekt</strong> na een lange dag.</li>
+            <li>Je kunt later altijd herhalen (er wordt niets opgeslagen).</li>
+          </ul>
+          <p class="small" style="margin-bottom:0;">
+            Sneltoets: ga naar boven met <span class="kbd">Home</span> / print met <span class="kbd">Ctrl/⌘ + P</span>.
+          </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="callout good">
+          <h3 style="margin:0 0 8px;">Extra begeleiding (optioneel)</h3>
+          <p class="small" style="margin:0 0 8px;">
+            Wil je dat de test je tussendoor helpt met “hoe kies ik ook alweer?” Zet dan de begeleiding aan.
+          </p>
+          <div class="actions" style="margin-top:0;">
+            <button type="button" class="secondary" id="toggleCoach" aria-pressed="true">Begeleiding: Aan</button>
+            <button type="button" class="ghost" id="openHowTo">Hoe werkt de score?</button>
+          </div>
+          <p class="small muted" style="margin:8px 0 0;">
+            Met begeleiding aan krijg je per vraag een korte tip (“kies vanuit energie”).
+          </p>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Quiz -->
   <form id="quiz" class="card" autocomplete="off">
+    <h2 style="margin-bottom:6px;">De vragen</h2>
+    <p class="muted small" style="margin-top:0;">
+      Antwoord snel en eerlijk. Je kunt je keuzes altijd aanpassen voordat je de uitslag bekijkt.
+    </p>
+
     <div id="questions"></div>
 
     <div class="actions">
       <button type="button" id="btnResult" disabled>Bekijk uitslag</button>
+      <button type="button" id="btnSave" class="secondary" disabled>Bewaar link met uitslag</button>
       <button type="button" id="btnReset" class="secondary">Opnieuw beginnen</button>
       <button type="button" id="btnPrint" class="secondary">Print / PDF</button>
     </div>
-    <p class="muted small">Printtip: gebruik browser → Afdrukken → “Opslaan als PDF”.</p>
+
+    <p class="muted small" style="margin-bottom:0;">
+      Printtip: gebruik browser → Afdrukken → “Opslaan als PDF”.
+    </p>
   </form>
 
+  <!-- Results -->
   <div id="result" class="card" style="display:none;"></div>
 </main>
 
 <footer>
-  Academisch ziekenhuis – Loopbaanadvies ANIOS • Versie 1.0
+  Loopbaanoriëntatie ANIOS • Versie 2.0 • Tip: combineer uitslag altijd met meeloopdagen & gesprekken
 </footer>
+
+<!-- Modal: How it works -->
+<dialog id="howModal" aria-label="Uitleg score">
+  <div class="modalHead">
+    <strong>Hoe werkt de score (A–D)?</strong>
+    <button class="xbtn" id="closeHow" aria-label="Sluit">Sluiten</button>
+  </div>
+  <div class="modalBody">
+    <p class="small">
+      Elke vraag geeft 1 punt aan één richting (A/B/C/D). Je totaalscore per richting bepaalt je top-2.
+      <br><strong>Let op:</strong> de uitslag is een <em>richting</em>, geen definitief specialisme.
+    </p>
+    <div class="twoCol">
+      <div class="callout">
+        <p class="small" style="margin:0;"><strong>A</strong> past vaak bij mensen die floreren in acute situaties en snel knopen doorhakken.</p>
+      </div>
+      <div class="callout">
+        <p class="small" style="margin:0;"><strong>B</strong> past vaak bij mensen die energie krijgen van complexiteit, data en diagnostische puzzels.</p>
+      </div>
+      <div class="callout">
+        <p class="small" style="margin:0;"><strong>C</strong> past vaak bij mensen die werkplezier halen uit begeleiding, gesprekken en context.</p>
+      </div>
+      <div class="callout">
+        <p class="small" style="margin:0;"><strong>D</strong> past vaak bij mensen die houden van precisie, techniek, procedures/beelden en kwaliteitsdenken.</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <p class="small muted" style="margin:0;">
+      Tip: zit je top-score dicht bij elkaar? Kies dan 2–3 meeloopmomenten en evalueer je energie na afloop.
+    </p>
+  </div>
+  <div class="modalActions">
+    <button type="button" class="secondary" id="closeHow2">Oké</button>
+  </div>
+</dialog>
 
 <script>
   // --- Config ---
   const directions = {
     A: {
-      title: "Acute & doeners",
+      title: "Acuut & doeners",
       tagline: "Tempo, handelen, directe beslissingen",
       examples: ["SEH", "Anesthesiologie", "IC", "Heelkunde", "Cardiologie (acuut)", "Gynaecologie (acuut)"],
       fits: [
-        "Je blijft rustig bij drukte en schakelt snel",
-        "Je vindt diensten en acute situaties vaak juist leuk",
-        "Je houdt van ‘direct resultaat’ en hands-on werk"
+        "Je blijft relatief rustig bij drukte en schakelt snel",
+        "Je vindt diensten en acute situaties vaak (stiekem) leuk",
+        "Je houdt van direct resultaat en hands-on werk"
       ],
       watch: [
-        "Als je sterk behoefte hebt aan voorspelbaarheid, kan dit zwaar zijn",
+        "Als je veel behoefte hebt aan voorspelbaarheid kan dit zwaar zijn",
         "Bewust kiezen voor herstelmomenten en grenzen"
       ]
     },
@@ -116,13 +241,13 @@
       tagline: "Complexe diagnostiek en klinisch redeneren",
       examples: ["Interne geneeskunde", "Neurologie", "Kindergeneeskunde", "Longgeneeskunde", "Reumatologie", "Infectieziekten"],
       fits: [
-        "Je krijgt energie van puzzelen en diepgang",
+        "Je krijgt energie van puzzelen, verdieping en verbanden leggen",
         "Je werkt graag met data, richtlijnen en differentiaaldiagnoses",
         "Je vindt het leuk om casuïstiek uit te pluizen"
       ],
       watch: [
-        "Je kunt verzuipen in ‘alles willen weten’—prioriteren helpt",
-        "Balans tussen inhoud en werkdruk bewaken"
+        "Let op ‘oneindig willen doorzoeken’—prioriteren helpt",
+        "Balans tussen inhoudelijke diepgang en werkdruk bewaken"
       ]
     },
     C: {
@@ -130,7 +255,7 @@
       tagline: "Gesprekken, gedrag, langdurig contact",
       examples: ["Psychiatrie", "Huisartsgeneeskunde", "Revalidatiegeneeskunde", "Ouderengeneeskunde", "Palliatieve zorg", "Somatiek met veel coaching"],
       fits: [
-        "Je hebt geduld en vindt betekenis in langdurige begeleiding",
+        "Je haalt voldoening uit begeleiding en continuïteit",
         "Je kijkt graag breder dan het orgaan: mens, systeem, context",
         "Je kunt goed luisteren en motiveren"
       ],
@@ -149,16 +274,30 @@
         "Je hoeft niet per se de hele dag aan het bed te staan"
       ],
       watch: [
-        "Let op dat je voldoende patiëntbetekenis/impact blijft voelen",
-        "Soms minder ‘directe dankbaarheid’ van patiënten"
+        "Let op dat je voldoende zingeving/impact blijft voelen",
+        "Soms minder directe ‘dankbaarheid’ van patiënten"
       ]
     }
   };
 
-  // Vragen (elk antwoord geeft 1 punt aan A/B/C/D)
+  // Guidance hints per question (short, supportive)
+  const coachHints = [
+    "Kies wat je spontaan pakt als het druk is.",
+    "Denk aan je favoriete contactvorm (kort/long/indirect).",
+    "Kies de dagstructuur waar je energie van krijgt, niet wat ‘handig’ lijkt.",
+    "Kies jouw natuurlijke besluitstijl (snel vs analyserend vs overleg vs protocol/precisie).",
+    "Waar voel je flow? Dat is vaak richtinggevend.",
+    "Welke situatie put je het meeste uit? Dat is óók informatie.",
+    "Kies eerlijk: hoe wil jij je avonden/nachten vullen?",
+    "Welke rol neem jij zonder dat iemand het vraagt?",
+    "Welke zin resoneert echt met jou?"
+  ];
+
+  // Questions
   const questions = [
     {
       text: "Wat vind je het leukste in je werkdag?",
+      tag: "Energie",
       options: [
         ["A", "Direct handelen en acute beslissingen nemen"],
         ["B", "Puzzelen, analyseren en differentiaaldiagnoses uitwerken"],
@@ -168,6 +307,7 @@
     },
     {
       text: "Hoe ziet jouw ideale patiëntcontact eruit?",
+      tag: "Contact",
       options: [
         ["A", "Kort, intens en vaak acuut"],
         ["B", "Regelmatig terugkerend, vooral medisch-inhoudelijk"],
@@ -177,6 +317,7 @@
     },
     {
       text: "Welke werkdagstructuur past het best bij jou?",
+      tag: "Structuur",
       options: [
         ["A", "Onvoorspelbaar en dynamisch, ik ga goed op afwisseling"],
         ["B", "Mix van poli, zaal, overleg en diensten"],
@@ -186,6 +327,7 @@
     },
     {
       text: "Hoe neem jij het liefst beslissingen?",
+      tag: "Besluiten",
       options: [
         ["A", "Snel op basis van klinisch beeld en urgentie"],
         ["B", "Na grondige analyse van gegevens en context"],
@@ -195,6 +337,7 @@
     },
     {
       text: "Waar krijg je het meeste energie van?",
+      tag: "Motivatie",
       options: [
         ["A", "Adrenaline, acute zorg, teamwork in het moment"],
         ["B", "Diepgang, complexiteit, ‘het snappen’"],
@@ -204,6 +347,7 @@
     },
     {
       text: "Wat is voor jou een grotere stressor?",
+      tag: "Stress",
       options: [
         ["A", "Langdurige onzekerheid zonder duidelijke actie"],
         ["B", "Snelle beslissingen met weinig informatie"],
@@ -213,6 +357,7 @@
     },
     {
       text: "Hoe kijk je naar diensten?",
+      tag: "Werk-privé",
       options: [
         ["A", "Prima of zelfs leuk: hoort erbij"],
         ["B", "Oké, zolang er inhoudelijke uitdaging is"],
@@ -222,6 +367,7 @@
     },
     {
       text: "Welke rol pak je vaak vanzelf in een team?",
+      tag: "Teamrol",
       options: [
         ["A", "Ik neem het voortouw als er knopen doorgehakt moeten worden"],
         ["B", "Ik structureer: wat weten we, wat missen we, plan van aanpak"],
@@ -231,6 +377,7 @@
     },
     {
       text: "Welke uitspraak past het meest bij jou?",
+      tag: "Zelfbeeld",
       options: [
         ["A", "‘Lievere een goede beslissing nú dan een perfecte later.’"],
         ["B", "‘De diagnose is het halve werk.’"],
@@ -240,14 +387,30 @@
     }
   ];
 
-  // --- Render quiz ---
+  // --- DOM ---
   const qWrap = document.getElementById("questions");
   const btnResult = document.getElementById("btnResult");
+  const btnSave = document.getElementById("btnSave");
   const btnReset = document.getElementById("btnReset");
   const btnPrint = document.getElementById("btnPrint");
   const resultEl = document.getElementById("result");
   const progressBar = document.getElementById("progressBar");
   const progressText = document.getElementById("progressText");
+  const answeredText = document.getElementById("answeredText");
+  const toggleCoachBtn = document.getElementById("toggleCoach");
+  const timeHint = document.getElementById("timeHint");
+
+  const howModal = document.getElementById("howModal");
+  const openHowTo = document.getElementById("openHowTo");
+  const closeHow = document.getElementById("closeHow");
+  const closeHow2 = document.getElementById("closeHow2");
+
+  // State
+  let coachOn = true;
+
+  function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+  }
 
   function render() {
     qWrap.innerHTML = "";
@@ -256,14 +419,26 @@
       const div = document.createElement("div");
       div.className = "q";
       div.innerHTML = `
-        <h3>${idx + 1}. ${q.text}</h3>
-        <div class="opt" role="radiogroup" aria-label="${q.text}">
-          ${q.options.map(([key, label], j) => `
-            <label>
+        <div class="qhead">
+          <div>
+            <div class="qmeta">
+              <span class="tag">${escapeHTML(q.tag)}</span>
+              <span class="tag">Vraag ${idx + 1}/${questions.length}</span>
+            </div>
+            <h3 style="margin-top:8px;">${idx + 1}. ${escapeHTML(q.text)}</h3>
+          </div>
+          <div style="min-width: 240px; max-width: 320px;">
+            <div class="hint" id="hint-${idx}" style="display:${coachOn ? "block" : "none"};">
+              <strong>Coach-tip:</strong> ${escapeHTML(coachHints[idx] || "Kies vanuit energie.")}
+            </div>
+          </div>
+        </div>
+
+        <div class="opt" role="radiogroup" aria-label="${escapeHTML(q.text)}">
+          ${q.options.map(([key, label]) => `
+            <label class="optlabel" data-q="${qId}" data-v="${key}">
               <input type="radio" name="${qId}" value="${key}" />
-              <div>
-                <strong>${key}</strong> — ${label}
-              </div>
+              <div><strong>${key}</strong> — ${escapeHTML(label)}</div>
             </label>
           `).join("")}
         </div>
@@ -277,10 +452,25 @@
       const name = `q${idx}`;
       return !!document.querySelector(`input[name="${name}"]:checked`);
     }).length;
+
     const pct = Math.round((answered / questions.length) * 100);
     progressBar.style.width = pct + "%";
     progressText.textContent = `${pct}% ingevuld`;
+    answeredText.textContent = `${answered}/${questions.length} vragen beantwoord`;
+
     btnResult.disabled = answered !== questions.length;
+    btnSave.disabled = true;
+
+    // Friendly hint evolves
+    if (answered === 0) timeHint.textContent = "Tip: antwoord vanuit energie";
+    else if (answered < questions.length) timeHint.textContent = "Goed bezig: kies snel & eerlijk";
+    else timeHint.textContent = "Klaar: bekijk je uitslag";
+
+    // Hide old result if answers change
+    if (resultEl.style.display === "block") {
+      resultEl.style.display = "none";
+      resultEl.innerHTML = "";
+    }
   }
 
   function calcScores() {
@@ -299,92 +489,343 @@
       .map(([k, v]) => ({ key: k, score: v, ...directions[k] }));
   }
 
+  function maxScore(scores) {
+    return Math.max(scores.A, scores.B, scores.C, scores.D);
+  }
+
+  function confidenceText(sorted, scores) {
+    const top = sorted[0].score;
+    const second = sorted[1].score;
+    const gap = top - second;
+
+    // Simple heuristic
+    if (gap >= 3) return "Sterke richting: je top-score ligt duidelijk hoger dan de rest.";
+    if (gap === 2) return "Redelijk duidelijke richting: je top-score is hoger, maar er is overlap.";
+    if (gap === 1) return "Gedeelde voorkeur: je top-2 liggen dicht bij elkaar. Meeloopdagen helpen het meest.";
+    return "Brede interesse: meerdere richtingen scoren gelijk. Focus op 2–3 meeloopmomenten en reflecteer op energie.";
+  }
+
+  function scoreCardHTML(letter, score, max) {
+    const pct = Math.round((score / max) * 100);
+    const title = directions[letter].title;
+    const tagline = directions[letter].tagline;
+    return `
+      <div class="scoreCard">
+        <div style="display:flex; justify-content:space-between; gap:10px; align-items:baseline;">
+          <div><strong>${letter}</strong> — ${escapeHTML(title)}</div>
+          <div class="muted">${score}/${max}</div>
+        </div>
+        <div class="small muted">${escapeHTML(tagline)}</div>
+        <div class="scoreBarWrap" aria-label="Score ${letter}">
+          <div class="scoreBar" data-scorebar="${letter}" style="width:${pct}%;"></div>
+        </div>
+      </div>
+    `;
+  }
+
   function renderResult() {
     const scores = calcScores();
     const sorted = sortDirections(scores);
     const top = sorted[0];
     const second = sorted[1];
 
-    // Tie check
     const ties = sorted.filter(x => x.score === top.score).map(x => x.key);
+    const conf = confidenceText(sorted, scores);
 
     const lines = [];
     lines.push(`<h2 style="margin:0 0 8px;">Jouw uitslag</h2>`);
-    lines.push(`<p class="muted">Scores: A ${scores.A} • B ${scores.B} • C ${scores.C} • D ${scores.D}</p>`);
+    lines.push(`<p class="muted" style="margin-top:0;">Scores: A ${scores.A} • B ${scores.B} • C ${scores.C} • D ${scores.D}</p>`);
+
+    // Confidence / interpretation
+    lines.push(`
+      <div class="callout info">
+        <p class="small" style="margin:0;"><strong>Interpretatie:</strong> ${escapeHTML(conf)}</p>
+      </div>
+    `);
 
     if (ties.length > 1) {
-      lines.push(`<div class="card warn" style="margin:12px 0;">
-        <strong>Je hebt een gedeelde top-score (${ties.join(", ")}).</strong><br>
-        Dat is normaal: dit wijst vaak op een goede match met meerdere richtingen. Gebruik de top-2 als startpunt voor meeloopdagen.
-      </div>`);
+      lines.push(`
+        <div class="callout warn" style="margin-top:10px;">
+          <p class="small" style="margin:0;">
+            <strong>Gedeelde top-score (${ties.join(", ")}).</strong>
+            Dat is normaal: dit wijst op meerdere passende richtingen. Gebruik je top-2 als startpunt voor meeloopdagen.
+          </p>
+        </div>
+      `);
     }
 
+    // Score cards
+    const max = questions.length;
+    lines.push(`<div class="divider"></div>`);
+    lines.push(`<h3 style="margin:0 0 10px;">Overzicht per richting</h3>`);
+    lines.push(`<div class="scoreRow">
+      ${scoreCardHTML("A", scores.A, max)}
+      ${scoreCardHTML("B", scores.B, max)}
+      ${scoreCardHTML("C", scores.C, max)}
+      ${scoreCardHTML("D", scores.D, max)}
+    </div>`);
+
+    lines.push(`<div class="divider"></div>`);
+
+    // Main content grid
     lines.push(`
       <div class="resultGrid">
         <div class="resultBox">
-          <h4>Beste match: ${top.key} — ${top.title}</h4>
-          <p>${top.tagline}</p>
+          <h4>Beste match: ${top.key} — ${escapeHTML(top.title)}</h4>
+          <p>${escapeHTML(top.tagline)}</p>
           <p class="small"><strong>Past vaak als:</strong></p>
-          <ul>${top.fits.map(x => `<li>${x}</li>`).join("")}</ul>
+          <ul>${top.fits.map(x => `<li>${escapeHTML(x)}</li>`).join("")}</ul>
           <p class="small" style="margin-top:10px;"><strong>Voorbeelden van specialismen:</strong></p>
-          <p class="small">${top.examples.join(" • ")}</p>
+          <p class="small">${top.examples.map(escapeHTML).join(" • ")}</p>
         </div>
 
         <div class="resultBox">
-          <h4>Runner-up: ${second.key} — ${second.title}</h4>
-          <p class="small">${second.tagline}</p>
-          <p class="small"><strong>Voorbeelden:</strong> ${second.examples.join(" • ")}</p>
+          <h4>Runner-up: ${second.key} — ${escapeHTML(second.title)}</h4>
+          <p class="small">${escapeHTML(second.tagline)}</p>
+          <p class="small"><strong>Voorbeelden:</strong> ${second.examples.map(escapeHTML).join(" • ")}</p>
+          <div class="divider"></div>
+          <p class="small">
+            <strong>Tip:</strong> plan een meeloopmoment in beide richtingen en vergelijk je energie achteraf.
+          </p>
         </div>
 
         <div class="resultBox">
           <h4>Waar moet je op letten?</h4>
-          <ul>${top.watch.map(x => `<li>${x}</li>`).join("")}</ul>
+          <ul>${top.watch.map(x => `<li>${escapeHTML(x)}</li>`).join("")}</ul>
+          <div class="divider"></div>
+          <p class="small">
+            <strong>Snelle reality-check:</strong> voelde je je de afgelopen maand vaker energiek in situaties die bij deze richting passen?
+          </p>
         </div>
 
         <div class="resultBox">
           <h4>Vervolgstappen (binnen 4 weken)</h4>
           <ul>
-            <li>Plan 1–2 meeloopmomenten bij je top-2 richtingen.</li>
-            <li>Vraag een kort gesprek aan met een AIOS én een staflid (15 min).</li>
-            <li>Noteer na elke dienst/werkdag: “waar ging mijn energie heen?”</li>
+            <li>Plan 1–2 meeloopmomenten bij je <strong>top-2</strong> richtingen.</li>
+            <li>Vraag een kort gesprek aan met een <strong>AIOS</strong> én een <strong>staflid</strong> (15 min).</li>
+            <li>Noteer na 3 diensten/werkdagen: “<em>waar ging mijn energie heen?</em>”</li>
             <li>Maak een mini-portfolio: 3 casussen waar je trots op bent + waarom.</li>
           </ul>
           <p class="small muted">
-            Tip voor intranet: voeg hier links toe naar lokale contactpersonen, meeloopformulieren en opleiders.
+            Tip: voeg in de HTML links toe naar lokale contactpersonen, meeloopformulieren en opleiders.
           </p>
         </div>
+
+        <div class="resultBox">
+          <h4>Reflectie (2 minuten)</h4>
+          <p class="small" style="margin:0 0 8px;">Schrijf kort op (voor jezelf):</p>
+          <ul>
+            <li>In welke momenten voelde ik <strong>flow</strong> de afgelopen 2 weken?</li>
+            <li>Waar kreeg ik spontaan <strong>complimenten</strong> over?</li>
+            <li>Welke taken wil ik over 5 jaar <strong>nog steeds</strong> doen?</li>
+          </ul>
+        </div>
+      </div>
+    `);
+
+    // Actions: copy summary
+    const shareText = `Mijn uitslag ANIOS Keuzehulp: A ${scores.A}, B ${scores.B}, C ${scores.C}, D ${scores.D}. Top: ${top.key} (${top.title}); Runner-up: ${second.key} (${second.title}).`;
+    lines.push(`
+      <div class="divider"></div>
+      <div class="callout">
+        <h3 style="margin:0 0 8px;">Delen of bewaren (optioneel)</h3>
+        <p class="small muted" style="margin-top:0;">
+          Je kunt een link met jouw scores bewaren (handig om later terug te kijken). Er wordt niets opgeslagen op een server; de link bevat alleen je scores.
+        </p>
+        <div class="actions">
+          <button type="button" class="secondary" id="btnCopySummary">Kopieer samenvatting</button>
+          <button type="button" class="secondary" id="btnCopyLink">Kopieer link met scores</button>
+          <button type="button" class="secondary" id="btnBackTop">Terug naar boven</button>
+        </div>
+        <p class="small muted" id="copyStatus" style="margin-bottom:0;"></p>
       </div>
     `);
 
     resultEl.innerHTML = lines.join("\n");
     resultEl.style.display = "block";
     resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // Enable save button & wire copy buttons
+    btnSave.disabled = false;
+
+    const btnCopySummary = document.getElementById("btnCopySummary");
+    const btnCopyLink = document.getElementById("btnCopyLink");
+    const btnBackTop = document.getElementById("btnBackTop");
+    const copyStatus = document.getElementById("copyStatus");
+
+    btnCopySummary?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        copyStatus.textContent = "Samenvatting gekopieerd naar klembord.";
+      } catch {
+        copyStatus.textContent = "Kopiëren lukt niet in deze browser. Selecteer en kopieer handmatig.";
+      }
+    });
+
+    btnCopyLink?.addEventListener("click", async () => {
+      const url = buildResultURL(scores);
+      try {
+        await navigator.clipboard.writeText(url);
+        copyStatus.textContent = "Link met scores gekopieerd naar klembord.";
+      } catch {
+        copyStatus.textContent = "Kopiëren lukt niet. Kopieer de URL uit de adresbalk na ‘Bewaar link met uitslag’.";
+      }
+    });
+
+    btnBackTop?.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    // Animate score bars already set width; nothing else required.
   }
 
   function resetQuiz() {
     document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+    document.querySelectorAll(".optlabel").forEach(l => l.classList.remove("selected"));
     resultEl.style.display = "none";
     resultEl.innerHTML = "";
+    clearURLScores();
     calcProgress();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  // Init
-  render();
-  calcProgress();
+  function buildResultURL(scores) {
+    const base = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams();
+    params.set("A", String(scores.A));
+    params.set("B", String(scores.B));
+    params.set("C", String(scores.C));
+    params.set("D", String(scores.D));
+    return base + "?" + params.toString();
+  }
+
+  function clearURLScores() {
+    const url = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }
+
+  function readScoresFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const A = parseInt(params.get("A") || "", 10);
+    const B = parseInt(params.get("B") || "", 10);
+    const C = parseInt(params.get("C") || "", 10);
+    const D = parseInt(params.get("D") || "", 10);
+    if ([A,B,C,D].some(n => Number.isNaN(n))) return null;
+    // Validate range
+    const max = questions.length;
+    if ([A,B,C,D].some(n => n < 0 || n > max)) return null;
+    if (A + B + C + D !== max) return null;
+    return {A,B,C,D};
+  }
+
+  function applyScoresToUI(scores) {
+    // This is a direction-only tool; we can't reconstruct exact answers from totals.
+    // Instead, we show a result directly (read-only mode) without touching radio inputs.
+    const sorted = sortDirections(scores);
+    const top = sorted[0];
+    const second = sorted[1];
+    const conf = confidenceText(sorted, scores);
+    const max = questions.length;
+
+    const lines = [];
+    lines.push(`<h2 style="margin:0 0 8px;">Uitslag (via link)</h2>`);
+    lines.push(`<p class="muted" style="margin-top:0;">Scores: A ${scores.A} • B ${scores.B} • C ${scores.C} • D ${scores.D}</p>`);
+    lines.push(`
+      <div class="callout info">
+        <p class="small" style="margin:0;"><strong>Interpretatie:</strong> ${escapeHTML(conf)}</p>
+      </div>
+    `);
+    lines.push(`<div class="divider"></div>`);
+    lines.push(`<h3 style="margin:0 0 10px;">Overzicht per richting</h3>`);
+    lines.push(`<div class="scoreRow">
+      ${scoreCardHTML("A", scores.A, max)}
+      ${scoreCardHTML("B", scores.B, max)}
+      ${scoreCardHTML("C", scores.C, max)}
+      ${scoreCardHTML("D", scores.D, max)}
+    </div>`);
+    lines.push(`<div class="divider"></div>`);
+    lines.push(`
+      <div class="resultGrid">
+        <div class="resultBox">
+          <h4>Beste match: ${top.key} — ${escapeHTML(top.title)}</h4>
+          <p>${escapeHTML(top.tagline)}</p>
+          <p class="small"><strong>Voorbeelden van specialismen:</strong></p>
+          <p class="small">${top.examples.map(escapeHTML).join(" • ")}</p>
+        </div>
+        <div class="resultBox">
+          <h4>Runner-up: ${second.key} — ${escapeHTML(second.title)}</h4>
+          <p class="small"><strong>Voorbeelden:</strong> ${second.examples.map(escapeHTML).join(" • ")}</p>
+          <div class="divider"></div>
+          <p class="small muted" style="margin:0;">
+            Deze uitslag kwam uit een bewaarde link. Wil je opnieuw invullen? Klik op “Opnieuw beginnen”.
+          </p>
+        </div>
+      </div>
+    `);
+    resultEl.innerHTML = lines.join("\n");
+    resultEl.style.display = "block";
+    resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // --- Event wiring ---
+  function wireSelectionStyling() {
+    // Highlight chosen option label
+    qWrap.addEventListener("change", (e) => {
+      const t = e.target;
+      if (!t || t.type !== "radio") return;
+      const name = t.name;
+      document.querySelectorAll(`label.optlabel[data-q="${name}"]`).forEach(l => l.classList.remove("selected"));
+      const selectedLabel = document.querySelector(`label.optlabel[data-q="${name}"][data-v="${t.value}"]`);
+      selectedLabel?.classList.add("selected");
+    });
+  }
+
+  toggleCoachBtn.addEventListener("click", () => {
+    coachOn = !coachOn;
+    toggleCoachBtn.textContent = `Begeleiding: ${coachOn ? "Aan" : "Uit"}`;
+    toggleCoachBtn.setAttribute("aria-pressed", coachOn ? "true" : "false");
+    // Toggle hints without re-rendering selections
+    questions.forEach((_, idx) => {
+      const h = document.getElementById(`hint-${idx}`);
+      if (h) h.style.display = coachOn ? "block" : "none";
+    });
+  });
+
+  openHowTo.addEventListener("click", () => howModal.showModal());
+  closeHow.addEventListener("click", () => howModal.close());
+  closeHow2.addEventListener("click", () => howModal.close());
+
+  btnResult.addEventListener("click", renderResult);
+
+  btnSave.addEventListener("click", () => {
+    const scores = calcScores();
+    const url = buildResultURL(scores);
+    window.history.replaceState({}, "", url);
+    // Small UX nudge
+    const el = document.getElementById("copyStatus");
+    if (el) el.textContent = "Link met scores staat nu in je adresbalk (kopieer de URL).";
+    else alert("Link met scores staat nu in je adresbalk. Kopieer de URL om te bewaren/delen.");
+  });
+
+  btnReset.addEventListener("click", resetQuiz);
+  btnPrint.addEventListener("click", () => window.print());
 
   document.getElementById("quiz").addEventListener("change", () => {
     calcProgress();
-    // Hide old result if answers change
-    if (resultEl.style.display === "block") {
-      resultEl.style.display = "none";
-      resultEl.innerHTML = "";
-    }
   });
 
-  btnResult.addEventListener("click", renderResult);
-  btnReset.addEventListener("click", resetQuiz);
-  btnPrint.addEventListener("click", () => window.print());
+  // --- Init ---
+  render();
+  wireSelectionStyling();
+  calcProgress();
+
+  // If URL contains saved scores, show result immediately (read-only)
+  const fromURL = readScoresFromURL();
+  if (fromURL) {
+    // Keep quiz available, but show results.
+    applyScoresToUI(fromURL);
+    btnSave.disabled = false;
+  }
 </script>
 </body>
 </html>
