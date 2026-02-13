@@ -1,0 +1,391 @@
+index.html
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ANIOS Keuzehulp – Welk specialisme past bij mij?</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; background: #f6f7f9; color: #111; }
+    header { padding: 24px 16px; background: #fff; border-bottom: 1px solid #e7e7e7; }
+    main { max-width: 920px; margin: 0 auto; padding: 16px; }
+    .card { background: #fff; border: 1px solid #e7e7e7; border-radius: 14px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04); margin: 12px 0; }
+    h1 { margin: 0 0 8px; font-size: 20px; }
+    p { margin: 8px 0; line-height: 1.5; }
+    .muted { color: #555; font-size: 14px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .col { flex: 1 1 360px; }
+    .q { margin: 14px 0; padding: 12px; border-radius: 12px; background: #fafafa; border: 1px solid #eee; }
+    .q h3 { margin: 0 0 10px; font-size: 16px; }
+    .opt { display: grid; gap: 8px; }
+    label { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border: 1px solid #e7e7e7; border-radius: 12px; background: #fff; cursor: pointer; }
+    input[type="radio"] { margin-top: 2px; }
+    label:hover { border-color: #cfd6df; }
+    .barwrap { width: 100%; height: 10px; background: #eceff3; border-radius: 999px; overflow: hidden; }
+    .bar { height: 100%; width: 0%; background: #111; transition: width .25s ease; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    button { border: 1px solid #111; background: #111; color: #fff; padding: 10px 12px; border-radius: 12px; cursor: pointer; }
+    button.secondary { background: #fff; color: #111; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .pill { display: inline-flex; padding: 4px 10px; border-radius: 999px; border: 1px solid #e7e7e7; background: #fff; font-size: 12px; }
+    .resultGrid { display: grid; gap: 10px; }
+    .resultBox { border: 1px solid #e7e7e7; border-radius: 14px; padding: 12px; background: #fff; }
+    .resultBox h4 { margin: 0 0 6px; }
+    ul { margin: 8px 0 0 18px; }
+    .small { font-size: 13px; color: #444; }
+    .warn { background: #fff7e6; border: 1px solid #ffe1a6; }
+    footer { padding: 20px 16px; color: #666; font-size: 13px; text-align: center; }
+    @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+  </style>
+</head>
+
+<body>
+<header>
+  <div style="max-width:920px;margin:0 auto;">
+    <h1>ANIOS Keuzehulp – Welk type specialisme past bij mij?</h1>
+    <p class="muted">
+      Invultijd: 5–10 minuten. Je antwoorden blijven in je browser (geen opslag).
+      Deze test is bedoeld als oriëntatie, niet als selectie-instrument.
+    </p>
+    <div class="barwrap" aria-label="Voortgang">
+      <div class="bar" id="progressBar"></div>
+    </div>
+    <p class="muted"><span class="pill" id="progressText">0% ingevuld</span></p>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="row">
+      <div class="col">
+        <p><strong>Hoe werkt de score?</strong><br>
+          Elke vraag geeft punten aan één “richting”:</p>
+        <ul class="small">
+          <li><strong>A</strong> = Acute & doeners (tempo, beslissen, directe actie)</li>
+          <li><strong>B</strong> = Beschouwend & analytisch (diagnostisch puzzelen)</li>
+          <li><strong>C</strong> = Relatie & context (langdurig contact, gesprekken)</li>
+          <li><strong>D</strong> = Techniek & precisie (procedures/beelden, vaak indirect)</li>
+        </ul>
+      </div>
+      <div class="col">
+        <p class="small warn card" style="margin:0;">
+          <strong>Tip:</strong> antwoord op basis van waar je energie van krijgt (niet wat “hoort”).
+          Als je twijfelt tussen twee opties: kies wat je op een drukke dag het liefst doet.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <form id="quiz" class="card" autocomplete="off">
+    <div id="questions"></div>
+
+    <div class="actions">
+      <button type="button" id="btnResult" disabled>Bekijk uitslag</button>
+      <button type="button" id="btnReset" class="secondary">Opnieuw beginnen</button>
+      <button type="button" id="btnPrint" class="secondary">Print / PDF</button>
+    </div>
+    <p class="muted small">Printtip: gebruik browser → Afdrukken → “Opslaan als PDF”.</p>
+  </form>
+
+  <div id="result" class="card" style="display:none;"></div>
+</main>
+
+<footer>
+  Academisch ziekenhuis – Loopbaanadvies ANIOS • Versie 1.0
+</footer>
+
+<script>
+  // --- Config ---
+  const directions = {
+    A: {
+      title: "Acute & doeners",
+      tagline: "Tempo, handelen, directe beslissingen",
+      examples: ["SEH", "Anesthesiologie", "IC", "Heelkunde", "Cardiologie (acuut)", "Gynaecologie (acuut)"],
+      fits: [
+        "Je blijft rustig bij drukte en schakelt snel",
+        "Je vindt diensten en acute situaties vaak juist leuk",
+        "Je houdt van ‘direct resultaat’ en hands-on werk"
+      ],
+      watch: [
+        "Als je sterk behoefte hebt aan voorspelbaarheid, kan dit zwaar zijn",
+        "Bewust kiezen voor herstelmomenten en grenzen"
+      ]
+    },
+    B: {
+      title: "Beschouwend & analytisch",
+      tagline: "Complexe diagnostiek en klinisch redeneren",
+      examples: ["Interne geneeskunde", "Neurologie", "Kindergeneeskunde", "Longgeneeskunde", "Reumatologie", "Infectieziekten"],
+      fits: [
+        "Je krijgt energie van puzzelen en diepgang",
+        "Je werkt graag met data, richtlijnen en differentiaaldiagnoses",
+        "Je vindt het leuk om casuïstiek uit te pluizen"
+      ],
+      watch: [
+        "Je kunt verzuipen in ‘alles willen weten’—prioriteren helpt",
+        "Balans tussen inhoud en werkdruk bewaken"
+      ]
+    },
+    C: {
+      title: "Relatie & context",
+      tagline: "Gesprekken, gedrag, langdurig contact",
+      examples: ["Psychiatrie", "Huisartsgeneeskunde", "Revalidatiegeneeskunde", "Ouderengeneeskunde", "Palliatieve zorg", "Somatiek met veel coaching"],
+      fits: [
+        "Je hebt geduld en vindt betekenis in langdurige begeleiding",
+        "Je kijkt graag breder dan het orgaan: mens, systeem, context",
+        "Je kunt goed luisteren en motiveren"
+      ],
+      watch: [
+        "Emotionele belasting: intervisie/supervisie is belangrijk",
+        "Grenzen tussen betrokkenheid en afstand bewaken"
+      ]
+    },
+    D: {
+      title: "Techniek & precisie",
+      tagline: "Beelden, procedures, technologie, nauwkeurigheid",
+      examples: ["Radiologie", "Pathologie", "Nucleaire geneeskunde", "Klinische genetica", "Oogheelkunde (technisch)", "KNO (procedures)"],
+      fits: [
+        "Je houdt van precisie en systematisch werken",
+        "Je vindt techniek/beelden/handvaardigheid aantrekkelijk",
+        "Je hoeft niet per se de hele dag aan het bed te staan"
+      ],
+      watch: [
+        "Let op dat je voldoende patiëntbetekenis/impact blijft voelen",
+        "Soms minder ‘directe dankbaarheid’ van patiënten"
+      ]
+    }
+  };
+
+  // Vragen (elk antwoord geeft 1 punt aan A/B/C/D)
+  const questions = [
+    {
+      text: "Wat vind je het leukste in je werkdag?",
+      options: [
+        ["A", "Direct handelen en acute beslissingen nemen"],
+        ["B", "Puzzelen, analyseren en differentiaaldiagnoses uitwerken"],
+        ["C", "Langdurig contact en gesprekken met patiënten"],
+        ["D", "Techniek, beelden of procedures uitvoeren"]
+      ]
+    },
+    {
+      text: "Hoe ziet jouw ideale patiëntcontact eruit?",
+      options: [
+        ["A", "Kort, intens en vaak acuut"],
+        ["B", "Regelmatig terugkerend, vooral medisch-inhoudelijk"],
+        ["C", "Langdurige behandelrelatie met veel context"],
+        ["D", "Beperkt of indirect (consult/onderzoek)"]
+      ]
+    },
+    {
+      text: "Welke werkdagstructuur past het best bij jou?",
+      options: [
+        ["A", "Onvoorspelbaar en dynamisch, ik ga goed op afwisseling"],
+        ["B", "Mix van poli, zaal, overleg en diensten"],
+        ["C", "Planbaar, met ruimte voor gesprek en begeleiding"],
+        ["D", "Planbaar, met focus op techniek/diagnostiek en minder diensten"]
+      ]
+    },
+    {
+      text: "Hoe neem jij het liefst beslissingen?",
+      options: [
+        ["A", "Snel op basis van klinisch beeld en urgentie"],
+        ["B", "Na grondige analyse van gegevens en context"],
+        ["C", "In overleg, met aandacht voor waarden/voorkeuren patiënt"],
+        ["D", "Volgens protocollen/metingen/beelden en nauwkeurige uitvoering"]
+      ]
+    },
+    {
+      text: "Waar krijg je het meeste energie van?",
+      options: [
+        ["A", "Adrenaline, acute zorg, teamwork in het moment"],
+        ["B", "Diepgang, complexiteit, ‘het snappen’"],
+        ["C", "Relatie, vertrouwen opbouwen, gedrag en motivatie"],
+        ["D", "Precisie, techniek, instrumenten, beelden, handvaardigheid"]
+      ]
+    },
+    {
+      text: "Wat is voor jou een grotere stressor?",
+      options: [
+        ["A", "Langdurige onzekerheid zonder duidelijke actie"],
+        ["B", "Snelle beslissingen met weinig informatie"],
+        ["C", "Korte contacten zonder tijd voor context"],
+        ["D", "Veel gesprekken/onderhandeling zonder technische of diagnostische kern"]
+      ]
+    },
+    {
+      text: "Hoe kijk je naar diensten?",
+      options: [
+        ["A", "Prima of zelfs leuk: hoort erbij"],
+        ["B", "Oké, zolang er inhoudelijke uitdaging is"],
+        ["C", "Liever beperkt; ik wil meer continuïteit overdag"],
+        ["D", "Het liefst weinig tot geen diensten"]
+      ]
+    },
+    {
+      text: "Welke rol pak je vaak vanzelf in een team?",
+      options: [
+        ["A", "Ik neem het voortouw als er knopen doorgehakt moeten worden"],
+        ["B", "Ik structureer: wat weten we, wat missen we, plan van aanpak"],
+        ["C", "Ik bewaak communicatie en patiëntperspectief"],
+        ["D", "Ik let op details, kwaliteit en uitvoering"]
+      ]
+    },
+    {
+      text: "Welke uitspraak past het meest bij jou?",
+      options: [
+        ["A", "‘Lievere een goede beslissing nú dan een perfecte later.’"],
+        ["B", "‘De diagnose is het halve werk.’"],
+        ["C", "‘Behandeling werkt pas als het past bij iemands leven.’"],
+        ["D", "‘Nauwkeurigheid en techniek maken het verschil.’"]
+      ]
+    }
+  ];
+
+  // --- Render quiz ---
+  const qWrap = document.getElementById("questions");
+  const btnResult = document.getElementById("btnResult");
+  const btnReset = document.getElementById("btnReset");
+  const btnPrint = document.getElementById("btnPrint");
+  const resultEl = document.getElementById("result");
+  const progressBar = document.getElementById("progressBar");
+  const progressText = document.getElementById("progressText");
+
+  function render() {
+    qWrap.innerHTML = "";
+    questions.forEach((q, idx) => {
+      const qId = `q${idx}`;
+      const div = document.createElement("div");
+      div.className = "q";
+      div.innerHTML = `
+        <h3>${idx + 1}. ${q.text}</h3>
+        <div class="opt" role="radiogroup" aria-label="${q.text}">
+          ${q.options.map(([key, label], j) => `
+            <label>
+              <input type="radio" name="${qId}" value="${key}" />
+              <div>
+                <strong>${key}</strong> — ${label}
+              </div>
+            </label>
+          `).join("")}
+        </div>
+      `;
+      qWrap.appendChild(div);
+    });
+  }
+
+  function calcProgress() {
+    const answered = questions.filter((_, idx) => {
+      const name = `q${idx}`;
+      return !!document.querySelector(`input[name="${name}"]:checked`);
+    }).length;
+    const pct = Math.round((answered / questions.length) * 100);
+    progressBar.style.width = pct + "%";
+    progressText.textContent = `${pct}% ingevuld`;
+    btnResult.disabled = answered !== questions.length;
+  }
+
+  function calcScores() {
+    const scores = { A: 0, B: 0, C: 0, D: 0 };
+    questions.forEach((_, idx) => {
+      const name = `q${idx}`;
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      if (checked) scores[checked.value] += 1;
+    });
+    return scores;
+  }
+
+  function sortDirections(scores) {
+    return Object.entries(scores)
+      .sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => ({ key: k, score: v, ...directions[k] }));
+  }
+
+  function renderResult() {
+    const scores = calcScores();
+    const sorted = sortDirections(scores);
+    const top = sorted[0];
+    const second = sorted[1];
+
+    // Tie check
+    const ties = sorted.filter(x => x.score === top.score).map(x => x.key);
+
+    const lines = [];
+    lines.push(`<h2 style="margin:0 0 8px;">Jouw uitslag</h2>`);
+    lines.push(`<p class="muted">Scores: A ${scores.A} • B ${scores.B} • C ${scores.C} • D ${scores.D}</p>`);
+
+    if (ties.length > 1) {
+      lines.push(`<div class="card warn" style="margin:12px 0;">
+        <strong>Je hebt een gedeelde top-score (${ties.join(", ")}).</strong><br>
+        Dat is normaal: dit wijst vaak op een goede match met meerdere richtingen. Gebruik de top-2 als startpunt voor meeloopdagen.
+      </div>`);
+    }
+
+    lines.push(`
+      <div class="resultGrid">
+        <div class="resultBox">
+          <h4>Beste match: ${top.key} — ${top.title}</h4>
+          <p>${top.tagline}</p>
+          <p class="small"><strong>Past vaak als:</strong></p>
+          <ul>${top.fits.map(x => `<li>${x}</li>`).join("")}</ul>
+          <p class="small" style="margin-top:10px;"><strong>Voorbeelden van specialismen:</strong></p>
+          <p class="small">${top.examples.join(" • ")}</p>
+        </div>
+
+        <div class="resultBox">
+          <h4>Runner-up: ${second.key} — ${second.title}</h4>
+          <p class="small">${second.tagline}</p>
+          <p class="small"><strong>Voorbeelden:</strong> ${second.examples.join(" • ")}</p>
+        </div>
+
+        <div class="resultBox">
+          <h4>Waar moet je op letten?</h4>
+          <ul>${top.watch.map(x => `<li>${x}</li>`).join("")}</ul>
+        </div>
+
+        <div class="resultBox">
+          <h4>Vervolgstappen (binnen 4 weken)</h4>
+          <ul>
+            <li>Plan 1–2 meeloopmomenten bij je top-2 richtingen.</li>
+            <li>Vraag een kort gesprek aan met een AIOS én een staflid (15 min).</li>
+            <li>Noteer na elke dienst/werkdag: “waar ging mijn energie heen?”</li>
+            <li>Maak een mini-portfolio: 3 casussen waar je trots op bent + waarom.</li>
+          </ul>
+          <p class="small muted">
+            Tip voor intranet: voeg hier links toe naar lokale contactpersonen, meeloopformulieren en opleiders.
+          </p>
+        </div>
+      </div>
+    `);
+
+    resultEl.innerHTML = lines.join("\n");
+    resultEl.style.display = "block";
+    resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function resetQuiz() {
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+    resultEl.style.display = "none";
+    resultEl.innerHTML = "";
+    calcProgress();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // Init
+  render();
+  calcProgress();
+
+  document.getElementById("quiz").addEventListener("change", () => {
+    calcProgress();
+    // Hide old result if answers change
+    if (resultEl.style.display === "block") {
+      resultEl.style.display = "none";
+      resultEl.innerHTML = "";
+    }
+  });
+
+  btnResult.addEventListener("click", renderResult);
+  btnReset.addEventListener("click", resetQuiz);
+  btnPrint.addEventListener("click", () => window.print());
+</script>
+</body>
+</html>
